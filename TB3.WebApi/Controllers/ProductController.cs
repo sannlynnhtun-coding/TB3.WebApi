@@ -35,8 +35,12 @@ public class ProductController : ControllerBase
         {
             return NotFound("Product not found.");
         }
-        
-        return Ok(item);
+
+        var response = new ProductGetResponseDto
+        {
+            ProductName = item.ProductName
+        };
+        return Ok(response);
     }
 
     [HttpPost]
@@ -139,4 +143,9 @@ public class ProductPatchRequestDto
     public int? Quantity { get; set; }
 
     public decimal? Price { get; set; }
+}
+
+public class ProductGetResponseDto
+{
+    public string ProductName { get; set; }
 }
