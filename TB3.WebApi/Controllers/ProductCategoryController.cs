@@ -13,6 +13,7 @@ public class ProductCategoryController : ControllerBase
     public ProductCategoryController()
     {
         _db = new AppDbContext();
+
     }
 
     [HttpGet]
@@ -100,6 +101,7 @@ public class ProductCategoryController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteProductCategory(int id)
     {
+
         var item = _db.TblProductCategories.FirstOrDefault(x => x.ProductCategoryId == id);
         if (item is null)
         {
