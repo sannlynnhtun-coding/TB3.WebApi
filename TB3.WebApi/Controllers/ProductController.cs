@@ -31,6 +31,38 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id}")]
+    public IActionResult GetProduct(int id)
+    {
+        var result = _productService.GetProdcutById(id);
+        if(!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public IActionResult CreateProduct(ProductCreateRequestDto request)
+    {
+        var result = _productService.CreateProduct(request);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateProduct(int id, ProductUpdateRequestDto request)
+    {
+        var result = _productService.Update(id, request);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
     //[HttpGet("{id}")]
     //public IActionResult GetProduct(int id)
     //{

@@ -1,4 +1,8 @@
-﻿using TB3.Database.AppDbContextModels;
+﻿using Azure.Core;
+using Humanizer;
+using Microsoft.EntityFrameworkCore;
+using TB3.Database.AppDbContextModels;
+using TB3.WebApi.Controllers;
 
 namespace TB3.WebApi.Services;
 
@@ -71,6 +75,179 @@ public class ProductService
         };
         return dto;
     }
+
+    public ProductGetByIdResponseDto GetProdcutById(int id)
+    {
+        ProductGetByIdResponseDto dto = new ProductGetByIdResponseDto();
+        var item = _db.TblProducts
+            .Where(x => x.DeleteFlag == false)
+            .FirstOrDefault(x => x.ProductId == id);
+        if (item is null)
+        {
+            dto = new ProductGetByIdResponseDto()
+            {
+                IsSuccess = false,
+                Message = "Product Not found"
+            };
+
+            return dto;
+        }
+
+        var product = new ProductDto    
+        {
+            ProductId = item.ProductId,
+            ProductName = item.ProductName,
+            Price = item.Price,
+            Quantity = item.Quantity,
+        };
+
+        dto = new ProductGetByIdResponseDto()
+        {
+            IsSuccess = true,
+            Message = "Product is successfully retrieved.",
+            Product = product,
+        };
+
+        return dto;
+    }
+
+    public ProductResponseDto CreateProduct(ProductCreateRequestDto requestDto)
+    {
+        bool isSuccess = false;
+        string message = string.Empty;
+
+        ProductResponseDto dto = new ProductResponseDto();
+
+        if (String.IsNullOrEmpty(requestDto.ProductName))
+        {
+            message = "Product name cannot be empty.";
+            goto Response;
+
+            //dto = new ProductResponseDto
+            //{
+            //    IsSuccess = false,
+            //    Message = "Product name cannot be empty."
+            //};
+            //return dto;
+        }
+        if (requestDto.Price <= 0)
+        {
+            message = "Price cannot be empty.";
+            goto Response;
+
+            //dto = new ProductResponseDto
+            //{
+            //    IsSuccess = false,
+            //    Message = "Price cannot be empty."
+            //};
+            //return dto;
+        }
+        if (requestDto.Quantity <= 0)
+        {
+            message = "Quatity cannot be empty.";
+            goto Response;
+
+            //dto = new ProductResponseDto
+            //{
+            //    IsSuccess = false,
+            //    Message = "Quatity cannot be empty."
+            //};
+            //return dto;
+        }
+
+        _db.TblProducts.Add(new TblProduct
+        {
+            CreatedDateTime = DateTime.Now,
+            Price = requestDto.Price,
+            DeleteFlag = false,
+            ProductName = requestDto.ProductName,
+            Quantity = requestDto.Quantity,
+        });
+
+        int result = _db.SaveChanges();
+
+        if(result > 0)
+        {
+            isSuccess = true;
+            message = "Saving Successful.";
+            goto Response;
+
+            //dto = new ProductResponseDto
+            //{
+            //    IsSuccess = false,
+            //    Message = "Saving Failed"
+            //};
+            //return dto;
+        }
+
+        message = "Saving Failed.";
+        
+        Response:
+        dto = new ProductResponseDto
+        {
+            IsSuccess = isSuccess,
+            Message = message,
+        };
+        
+        return dto;
+    }
+
+    public ProductResponseDto Update(int id, ProductUpdateRequestDto requestDto)
+    {
+        bool isSuccess = false;
+        string message = string.Empty;
+        ProductResponseDto dto = new ProductResponseDto();
+
+        if (String.IsNullOrEmpty(requestDto.ProductName))
+        {
+            message = "Product name cannot be empty.";
+            goto Response;
+        }
+        if (requestDto.Price <= 0)
+        {
+            message = "Price cannot be empty.";
+            goto Response;
+        }
+        if (requestDto.Quantity <= 0)
+        {
+            message = "Quantity cannot be empty.";
+            goto Response;
+        }
+
+        var item = _db.TblProducts
+            .Where(x => x.DeleteFlag == false)
+            .FirstOrDefault(x => x.ProductId == id);
+
+        if (item is null)
+        {
+            message = "Product Not Found";
+            goto Response;
+        }
+
+        item.ProductName = requestDto.ProductName;
+        item.Price = requestDto.Price;
+        item.Quantity = requestDto.Quantity;
+        item.ModifiedDateTime = DateTime.Now;
+        int result = _db.SaveChanges();
+
+        message = "Updating Failed.";
+
+        if (result > 0)
+        {
+            isSuccess = true;
+            message = "Updating Successful.";
+            goto Response;
+        }
+
+    Response:
+        dto = new ProductResponseDto
+        {
+            IsSuccess = isSuccess,
+            Message = message,
+        };
+
+        return dto;
+    }
 }
 
 public class ProductGetResponseDto
@@ -78,6 +255,19 @@ public class ProductGetResponseDto
     public bool IsSuccess { get; set; }
     public string Message { get; set; } 
     public List<ProductDto> Products { get; set; }
+}
+
+public class ProductResponseDto
+{
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; }
+}
+
+public class ProductGetByIdResponseDto
+{
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; }
+    public ProductDto Product { get; set; }
 }
 
 public class ProductDto
