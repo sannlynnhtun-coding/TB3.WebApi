@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using TB3.Database.AppDbContextModels;
@@ -93,7 +94,7 @@ public class ProductService
             return dto;
         }
 
-        var product = new ProductDto    
+        var product = new ProductDto
         {
             ProductId = item.ProductId,
             ProductName = item.ProductName,
@@ -166,7 +167,7 @@ public class ProductService
 
         int result = _db.SaveChanges();
 
-        if(result > 0)
+        if (result > 0)
         {
             isSuccess = true;
             message = "Saving Successful.";
@@ -181,14 +182,14 @@ public class ProductService
         }
 
         message = "Saving Failed.";
-        
-        Response:
+
+    Response:
         dto = new ProductResponseDto
         {
             IsSuccess = isSuccess,
             Message = message,
         };
-        
+
         return dto;
     }
 
@@ -248,19 +249,102 @@ public class ProductService
 
         return dto;
     }
+
+    public ProductResponseDto PatchUpdate(int id, ProductPatchRequestDto requestDto)
+    {
+        ProductResponseDto dto = new ProductResponseDto();
+
+        var item = _db.TblProducts
+            .Where(x => x.DeleteFlag == false)
+            .FirstOrDefault(x => x.ProductId == id);
+
+        if (item is null)
+        {
+            dto.Message = "Product Not Found";
+            goto Response;
+        }
+
+        if (!string.IsNullOrEmpty(requestDto.ProductName))
+        {
+            item.ProductName = requestDto.ProductName;
+        }
+        if (requestDto.Price is not null && requestDto.Price > 0)
+        {
+            item.Price = requestDto.Price ?? 0;
+        }
+        if (requestDto.Price is not null && requestDto.Quantity > 0)
+        {
+            item.Quantity = requestDto.Quantity ?? 0;
+        }
+        item.ModifiedDateTime = DateTime.Now;
+
+        int result = _db.SaveChanges();
+        
+        if (result < 1)
+        {
+            dto.Message = "Updating Failed.";
+            goto Response;
+        }
+
+        dto.IsSuccess = true;
+        dto.Message = "Updating Successful.";
+
+    Response:
+        return dto;
+    }
+
+    public ProductResponseDto DeleteProduct(int id)
+    {
+        ProductResponseDto dto = new ProductResponseDto();
+
+        if (id <= 0)
+        {
+            dto.Message = "Invalid Product Id.";
+            goto Response;
+        }
+
+        var item = _db.TblProducts
+            .Where(x => x.DeleteFlag == false)
+            .FirstOrDefault(x => x.ProductId == id);
+
+        if (item is null)
+        {
+            dto.Message = "Product Not Found.";
+            goto Response;
+        }
+
+        // Proceed Soft Delete
+        item.DeleteFlag = true;
+        item.ModifiedDateTime = DateTime.Now;
+        int result = _db.SaveChanges();
+
+        if (result < 1)
+        {
+            dto.Message = "Deleting Failed.";
+            goto Response;
+        }
+
+        dto.IsSuccess = true;
+        dto.Message = "Deleting Successful.";
+
+    Response:
+        return dto;
+    }
 }
+
+
 
 public class ProductGetResponseDto
 {
     public bool IsSuccess { get; set; }
-    public string Message { get; set; } 
+    public string Message { get; set; }
     public List<ProductDto> Products { get; set; }
 }
 
 public class ProductResponseDto
 {
-    public bool IsSuccess { get; set; }
-    public string Message { get; set; }
+    public bool IsSuccess { get; set; } = false;
+    public string Message { get; set; } = string.Empty;
 }
 
 public class ProductGetByIdResponseDto
