@@ -75,7 +75,7 @@ public class ProductController : ControllerBase
     [HttpPatch("{id}")]
     public IActionResult UpdateProduct(int id, ProductPatchRequestDto request)
     {
-        ProductResponseDto result = _productService.PatchUpdate(id, request);
+        ProductResponseDto result = _productService.PatchProduct(id, request);
 
         if (!result.IsSuccess)
             return BadRequest(result);

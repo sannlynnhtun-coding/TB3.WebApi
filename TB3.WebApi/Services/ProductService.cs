@@ -298,6 +298,45 @@ public class ProductService
 
         return dto;
     }
+
+
+    public ProductResponseDto DeleteProduct(int id)
+    {
+        ProductResponseDto dto = new ProductResponseDto();
+
+        if (id <= 0)
+        {
+            dto.Message = "Invalid Product Id.";
+            goto Response;
+        }
+
+        var item = _db.TblProducts
+            .Where(x => x.DeleteFlag == false)
+            .FirstOrDefault(x => x.ProductId == id);
+
+        if (item is null)
+        {
+            dto.Message = "Product Not Found.";
+            goto Response;
+        }
+
+        // Proceed Soft Delete
+        item.DeleteFlag = true;
+        item.ModifiedDateTime = DateTime.Now;
+        int result = _db.SaveChanges();
+
+        if (result < 1)
+        {
+            dto.Message = "Deleting Failed.";
+            goto Response;
+        }
+
+        dto.IsSuccess = true;
+        dto.Message = "Deleting Successful.";
+
+    Response:
+        return dto;
+    }
 }
 
 
