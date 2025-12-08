@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using TB3.Database.AppDbContextModels;
@@ -65,6 +66,27 @@ public class ProductController : ControllerBase
     public IActionResult PatchProduct(int id, ProductPatchRequestDto request)
     {
         var result = _productService.PatchProduct(id, request);
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpPatch("{id}")]
+    public IActionResult UpdateProduct(int id, ProductPatchRequestDto request)
+    {
+        ProductResponseDto result = _productService.PatchUpdate(id, request);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteProduct(int id)
+    {
+        ProductResponseDto result = _productService.DeleteProduct(id);
         if (!result.IsSuccess)
             return BadRequest(result);
 

@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using TB3.Database.AppDbContextModels;
@@ -93,7 +94,7 @@ public class ProductService
             return dto;
         }
 
-        var product = new ProductDto    
+        var product = new ProductDto
         {
             ProductId = item.ProductId,
             ProductName = item.ProductName,
@@ -187,7 +188,7 @@ public class ProductService
             IsSuccess = isSuccess,
             Message = message,
         };
-        
+
         return dto;
     }
 
@@ -299,17 +300,19 @@ public class ProductService
     }
 }
 
+
+
 public class ProductGetResponseDto
 {
     public bool IsSuccess { get; set; }
-    public string Message { get; set; } 
+    public string Message { get; set; }
     public List<ProductDto> Products { get; set; }
 }
 
 public class ProductResponseDto
 {
-    public bool IsSuccess { get; set; }
-    public string Message { get; set; }
+    public bool IsSuccess { get; set; } = false;
+    public string Message { get; set; } = string.Empty;
 }
 
 public class ProductGetByIdResponseDto
