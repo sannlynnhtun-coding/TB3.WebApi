@@ -187,8 +187,6 @@ public class ProductCategoryDapperController : ControllerBase
             int result = db.Execute(query, new { ProductCategoryId = id});
             string message = result > 0 ? "Delete Successful" : "Delete Failed";
             return Ok(message);
-
-
         }
     }
 
@@ -212,7 +210,6 @@ public class ProductCategoryDapperController : ControllerBase
     }
 }
 
-
 public class ProductCategoryDto
 {
     public int? ProductCategoryId { get; set; }
@@ -230,4 +227,3 @@ public class ProductCategoryResponseDto
     public DateTime? CreatedDateTime { get; set; }
     public DateTime? ModifiedDateTime { get; set; }
 }
-

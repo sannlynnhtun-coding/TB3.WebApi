@@ -139,4 +139,3 @@ public class ProductCategoryGetResponseDto
     public string? ProductCategoryCode { get; set; }
     public string? ProductCategoryName { get; set; }
 }
-
