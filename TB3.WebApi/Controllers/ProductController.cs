@@ -62,7 +62,7 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPatch("{id}")]
+    /*[HttpPatch("{id}")]
     public IActionResult PatchProduct(int id, ProductPatchRequestDto request)
     {
         var result = _productService.PatchProduct(id, request);
@@ -70,7 +70,7 @@ public class ProductController : ControllerBase
             return BadRequest(result);
 
         return Ok(result);
-    }
+    }*/
 
     [HttpPatch("{id}")]
     public IActionResult UpdateProduct(int id, ProductPatchRequestDto request)
