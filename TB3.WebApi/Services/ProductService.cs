@@ -7,7 +7,6 @@ using TB3.WebApi.Controllers;
 
 namespace TB3.WebApi.Services;
 
-
 // Business Logic + Data Access
 public class ProductService
 {
@@ -299,7 +298,6 @@ public class ProductService
         return dto;
     }
 
-
     public ProductResponseDto DeleteProduct(int id)
     {
         ProductResponseDto dto = new ProductResponseDto();
@@ -338,8 +336,6 @@ public class ProductService
         return dto;
     }
 }
-
-
 
 public class ProductGetResponseDto
 {
