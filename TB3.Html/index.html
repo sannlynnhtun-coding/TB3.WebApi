@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Hello World</h1>
+    <input type="text" id="txtText" />
+    <!-- <button type="button" id="btnClick" onclick="funText()">Click</button> -->
+    <button type="button" id="btnSave" onclick="save()">Save</button>
+
+    <script>
+
+        loadData();
+
+        function funText() {
+            const text = document.getElementById('txtText').value;
+            alert("Hello " + text);
+
+            console.log('Hello from console... ' + text);
+        }
+
+        function save() {
+            const text = document.getElementById('txtText').value;
+            localStorage.setItem("Name", text);
+        }
+
+        function loadData() {
+            let text = localStorage.getItem("Name");
+            document.getElementById('txtText').value = text;
+        }
+
+
+    </script>
+</body>
+
+</html>
