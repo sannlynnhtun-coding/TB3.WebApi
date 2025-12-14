@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using TB3.Database.AppDbContextModels;
 
-namespace TB3.WebApi.Controllers;
+namespace TB3.WebApi.Controllers.ProductCategory;
 
 [Route("api/[controller]")]
 [ApiController]
