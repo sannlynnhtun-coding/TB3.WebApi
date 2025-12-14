@@ -18,6 +18,7 @@ builder.Services.AddScoped<IProductDapperService, ProductDapperService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 // Product Category Services
+builder.Services.AddScoped<IProductCategoryADODotNetService, ProductCategoryADODotService>();
 builder.Services.AddScoped<IProductCategoryDapperService, ProductCategoryDapperService>();
 builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
 
