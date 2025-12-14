@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TB3.Database.AppDbContextModels;
 using TB3.WebApi.Services;
+using TB3.WebApi.Services.ProductCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductAdoDotNetService, ProductAdoDotNetService>();
 builder.Services.AddScoped<IProductDapperService, ProductDapperService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+
+// Product Category Services
+builder.Services.AddScoped<IProductCategoryADODotNetService, ProductCategoryADODotService>();
+builder.Services.AddScoped<IProductCategoryDapperService, ProductCategoryDapperService>();
+builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
