@@ -27,6 +27,33 @@
 
     <button type="button" id="btnSave" class="btn btn-success">Save</button>
 
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">No.</th>
+                <th scope="col">Id</th>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Content</th>
+            </tr>
+        </thead>
+        <tbody id="tbData">
+            <!-- <tr>
+                <td>
+                    <button type="button" class="btn btn-warning">Edit</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </td>
+            </tr> -->
+            <!-- <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr> -->
+        </tbody>
+    </table>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -36,21 +63,60 @@
 
     <script>
 
-        loadData() ;
+        loadData();
 
         function loadData() {
             let blogs = localStorage.getItem("Blogs");
             if (blogs == null) return;
 
             blogs = JSON.parse(blogs);
-            $('#txtTitle').val(blogs.Title);
-            $('#txtAuthor').val(blogs.Author);
-            $('#txtContent').val(blogs.Content);
 
-            localStorage.removeItem("Blogs");
+            let trRows = '';
+            for (let i = 0; i < blogs.length; i++) {
+                const item = blogs[i];
+                console.log({ item });
+                console.log(item);
+
+                trRows += `<tr>
+                <td>
+                    <button type="button" class="btn btn-warning" onclick="editData('${item.Id}')">Edit</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteData('${item.Id}')">Delete</button>
+                </td>
+                <th scope="row">${i + 1}</th>
+                <td>${item.Id}</td>
+                <td>${item.Title}</td>
+                <td>${item.Author}</td>
+                <td>${item.Content}</td>
+            </tr>`;
+            }
+
+            $('#tbData').html(trRows);
+
+            // $('#txtTitle').val(blogs.Title);
+            // $('#txtAuthor').val(blogs.Author);
+            // $('#txtContent').val(blogs.Content);
+
+            // localStorage.removeItem("Blogs");
         }
 
         $('#btnSave').click(function () {
+            if (editId == null) {
+                saveData();
+            }
+            else {
+                updateData();
+            }
+
+            editId = null; // important case
+            $('#txtTitle').val('');
+            $('#txtAuthor').val('');
+            $('#txtContent').val('');
+            $('#txtTitle').focus();
+
+            loadData();
+        })
+
+        function saveData() {
             const title = $('#txtTitle').val();
             if (title == null || title == '') {
                 alert("Please enter title.");
@@ -72,24 +138,119 @@
                 return;
             }
 
-            const requestDto = {
+            const uuid = crypto.randomUUID();
+            const item = {
+                Id: uuid,
                 Title: title,
                 Author: author,
                 Content: content
             };
 
-            const json = JSON.stringify(requestDto);
+            let lst = [];
+            let data = localStorage.getItem("Blogs"); // json string
+            if (data == null) {
+                lst = [];
+            }
+            else {
+                lst = JSON.parse(data); //[{},{}]
+            }
 
+            lst.push(item); // lst add 
+
+            const json = JSON.stringify(lst); // json object to json string
             localStorage.setItem("Blogs", json);
 
             alert('Saving Successful.');
+        }
 
-            $('#txtTitle').val('');
-            $('#txtAuthor').val('');
-            $('#txtContent').val('');
-            $('#txtTitle').focus();
-        })
+        function updateData() {
+            const title = $('#txtTitle').val();
+            if (title == null || title == '') {
+                alert("Please enter title.");
+                $('#txtTitle').focus();
+                return;
+            }
 
+            const author = $('#txtAuthor').val();
+            if (author == null || author == '') {
+                alert("Please enter author.");
+                $('#txtAuthor').focus();
+                return;
+            }
+
+            const content = $('#txtContent').val();
+            if (content == null || content == '') {
+                alert("Please enter content.");
+                $('#txtContent').focus();
+                return;
+            }
+
+            let lst = getData();
+            let index = lst.findIndex(x => x.Id == editId);
+
+            if (index == -1) {
+                return;
+            }
+
+            lst[index].Title = title;
+            lst[index].Author = author;
+            lst[index].Content = content;
+
+            const json = JSON.stringify(lst); // json object to json string
+            localStorage.setItem("Blogs", json);
+
+            alert('Updating Successful.');
+        }
+
+        let editId = null;
+        function editData(id) {
+            // alert(id);
+
+            let lst = getData();
+
+            let result = lst.filter(x => x.Id == id); // [{}], [{},{}]
+            console.log({ result });
+
+            if (result.length == 0) {
+                alert('No data found.');
+                return;
+            }
+
+            let item = result[0];
+
+            editId = item.Id;
+            $('#txtTitle').val(item.Title);
+            $('#txtAuthor').val(item.Author);
+            $('#txtContent').val(item.Content);
+        }
+
+        function getData() {
+            let lst = [];
+            let data = localStorage.getItem("Blogs"); // json string
+            if (data == null) {
+                lst = [];
+            }
+            else {
+                lst = JSON.parse(data); //[{},{}]
+            }
+            return lst;
+        }
+
+        function deleteData(id) {
+            let confirmResult = confirm("are you sure want to delete?");
+            if (confirmResult == false) return;
+
+            let lst = getData();
+
+            lst = lst.filter(x => x.Id != id); // 4 => 3
+            const json = JSON.stringify(lst); // json object to json string
+            localStorage.setItem("Blogs", json);
+
+            alert('Deleting Successful.');
+
+            loadData();
+        }
+    
     </script>
 </body>
 
